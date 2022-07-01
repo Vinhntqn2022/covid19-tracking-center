@@ -1,0 +1,27 @@
+
+.header__tabContainer {
+    margin-left: auto;
+}
+
+.header__service-menu .MuiMenu-paper {
+    background-color: #0B72B9;
+    color: white;
+}
+.header__service-menu .MuiMenuItem-root {
+    opacity: 0.7;
+    font-weight: bold;
+}
+.header__service-menu .MuiMenuItem-root:hover {
+    opacity: 1;
+}
+.header__drawer .MuiDrawer-paper {
+    background-color: #0B72B9;
+}
+.header__drawer .MuiListItem-root {
+    opacity: 0.7;
+    font-weight: bold;
+}
+.Mui-selected {
+    opacity: 1 !important;
+}
+
