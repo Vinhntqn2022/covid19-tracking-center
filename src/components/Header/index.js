@@ -39,11 +39,6 @@ const Header = ({ colorMode, setLocale }) => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const [value, setValue] = useState(0);
-  const [inputValue, setInputValue] = useState('');
-  const handleInputValueChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
   useEffect(() => {
     switch (window.location.pathname) {
       case '/':
@@ -51,17 +46,7 @@ const Header = ({ colorMode, setLocale }) => {
           setValue(0);
         }
         break;
-      case '/newcases':
-        if (value !== 1) {
-          setValue(1);
-        }
-        break;
-      case '/deads':
-        if (value !== 1) {
-          setValue(1);
-        }
-        break;
-      case '/vacinations':
+      case '/details':
         if (value !== 1) {
           setValue(1);
         }
@@ -94,17 +79,6 @@ const Header = ({ colorMode, setLocale }) => {
             >
               <Image alt='company logo' src={logo} />
             </Button>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder='Search...'
-                inputProps={{ 'aria-label': 'search' }}
-                value={inputValue}
-                onChange={handleInputValueChange}
-              />
-            </Search>
             {matches ? (
               <SubDrawer
                 value={value}

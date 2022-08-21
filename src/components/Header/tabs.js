@@ -13,22 +13,28 @@ import {
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
+import { AuthActions } from '../../redux/rootAction';
 import { LOCALES } from '../../i18n';
 import translate from '../../i18n/translate';
 import './Header.css';
 import { classes } from './classes';
+import { checkToken } from '../../ultils/checkToken';
 
 const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
-  const [anchorServices, setAnchorServices] = useState(null);
+  const token = useSelector((state) => state.AuthReducer.token);
+  const dispatch = useDispatch();
   const [anchorSetting, setAnchorSetting] = useState(null);
   const [anchorUser, setAnchorUser] = useState(null);
-  const [servicesOpen, setServicesOpen] = useState(false);
+
   const [settingOpen, setSettingOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [alignment, setAlignment] = useState('dark');
   const [language, setLanguage] = useState('en');
 
+  const navigate = useNavigate();
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
   };
@@ -37,14 +43,6 @@ const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
   };
   const handleOnchange = (event, value) => {
     setValue(value);
-  };
-  const handleServicesClick = (event) => {
-    setAnchorServices(event.currentTarget);
-    setServicesOpen(true);
-  };
-  const handleServicesClose = () => {
-    setAnchorServices(null);
-    setServicesOpen(false);
   };
   const handleSettingClick = (event) => {
     setAnchorSetting(event.currentTarget);
@@ -61,6 +59,10 @@ const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
   const handleUserClose = () => {
     setAnchorUser(null);
     setUserOpen(false);
+  };
+  const handleLogout = () => {
+    dispatch(AuthActions.setToken(null));
+    navigate('/');
   };
   return (
     <Fragment>
@@ -80,11 +82,8 @@ const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
         <Tab
           sx={classes.tab}
           component={Link}
-          to='/services'
-          aria-owns={anchorServices ? 'simple-menu' : undefined}
-          aria-haspopup={anchorServices ? true : undefined}
-          onMouseOver={(event) => handleServicesClick(event)}
-          label={translate('services')}
+          to='/details'
+          label={translate('details')}
         />
         <Tab
           sx={classes.tab}
@@ -105,13 +104,21 @@ const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
           sx={classes.tab}
           label={translate('setting')}
         />
-        <Tab
-          aria-owns={anchorUser ? 'user-menu' : undefined}
-          aria-haspopup={anchorUser ? true : undefined}
-          onClick={(event) => handleUserClick(event)}
-          sx={classes.tab}
-          label={translate('user')}
-        />
+        {checkToken(token) === false ? (
+          <Tab
+            aria-owns={anchorUser ? 'user-menu' : undefined}
+            aria-haspopup={anchorUser ? true : undefined}
+            onClick={(event) => handleUserClick(event)}
+            sx={classes.tab}
+            label={translate('user')}
+          />
+        ) : (
+          <Tab
+            onClick={handleLogout}
+            sx={classes.AuthButton}
+            label={translate('logout')}
+          ></Tab>
+        )}
       </Tabs>
       <Menu
         id='setting-menu'
@@ -163,50 +170,7 @@ const SubTabs = ({ colorMode, setLocale, value, setValue }) => {
           </FormControl>
         </MenuItem>
       </Menu>
-      <Menu
-        style={{ zIndex: 1302 }}
-        id='simple-menu'
-        anchorEl={anchorServices}
-        open={servicesOpen}
-        onClose={handleServicesClose}
-        MenuListProps={{ onMouseLeave: handleServicesClose }}
-        className='header__service-menu'
-        elevation={0}
-      >
-        <MenuItem
-          onClick={() => {
-            handleServicesClose();
-            setValue(1);
-          }}
-          component={Link}
-          to='/newcases'
-          sx={classes.menuItem}
-        >
-          {translate('cases')}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleServicesClose();
-            setValue(1);
-          }}
-          component={Link}
-          to='/deads'
-          sx={classes.menuItem}
-        >
-          {translate('deads')}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleServicesClose();
-            setValue(1);
-          }}
-          component={Link}
-          to='/vacinations'
-          sx={classes.menuItem}
-        >
-          {translate('vacinations')}
-        </MenuItem>
-      </Menu>
+
       <Menu
         style={{ zIndex: 1302 }}
         id='user-menu'

@@ -48,7 +48,7 @@ const Footer = () => {
                 to='/vacinations'
                 sx={classes.gridLink}
               >
-                {translate('vacination')}
+                {translate('vacinations')}
               </Grid>
             </Grid>
           </Grid>

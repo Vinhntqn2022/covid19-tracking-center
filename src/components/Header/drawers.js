@@ -20,7 +20,11 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness5Icon from '@mui/icons-material/Brightness5';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
+import { AuthActions } from '../../redux/rootAction';
+import { checkToken } from '../../ultils/checkToken';
 import { classes } from './classes';
 import { TollbarMargin } from './styled';
 import { LOCALES } from '../../i18n';
@@ -31,18 +35,24 @@ const SubDrawer = ({ value, setValue, colorMode, setLocale }) => {
   const iOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const token = useSelector((state) => state.AuthReducer.token);
+  const dispatch = useDispatch();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [serviceOpen, setServiceOpen] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [alignment, setAlignment] = useState('dark');
   const [language, setLanguage] = useState('en');
 
+  const navigate = useNavigate();
   const handleChange = (event, newAlignment) => {
     setAlignment(newAlignment);
   };
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
+  };
+  const handleLogout = () => {
+    dispatch(AuthActions.setToken(null));
+    navigate('/');
   };
   return (
     <Fragment>
@@ -77,38 +87,19 @@ const SubDrawer = ({ value, setValue, colorMode, setLocale }) => {
             className='header__drawer-listItem'
             onClick={() => {
               setValue(1);
-              setServiceOpen(!serviceOpen);
+              setOpenDrawer(false);
             }}
             selected={value === 1}
             divider
             button
             component={Link}
-            to='/services'
+            to='/details'
           >
             <ListItemText sx={classes.drawerItem} disableTypography>
-              {translate('services')}
+              {translate('details')}
             </ListItemText>
-            {serviceOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
-          <Collapse in={serviceOpen} timeout='auto' unmountOnExit>
-            <List component='div' disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText sx={classes.drawerItem} disableTypography>
-                  {translate('cases')}
-                </ListItemText>
-              </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText sx={classes.drawerItem} disableTypography>
-                  {translate('deads')}
-                </ListItemText>
-              </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText sx={classes.drawerItem} disableTypography>
-                  {translate('vacinations')}
-                </ListItemText>
-              </ListItemButton>
-            </List>
-          </Collapse>
+
           <ListItem
             className='header__drawer-listItem'
             onClick={() => {
@@ -150,8 +141,6 @@ const SubDrawer = ({ value, setValue, colorMode, setLocale }) => {
             selected={value === 4}
             divider
             button
-            component={Link}
-            to='/'
           >
             <ListItemText sx={classes.drawerItem} disableTypography>
               {translate('setting')}
@@ -208,37 +197,53 @@ const SubDrawer = ({ value, setValue, colorMode, setLocale }) => {
               </ListItemButton>
             </List>
           </Collapse>
-          <ListItem
-            className='header__drawer-listItem'
-            onClick={() => {
-              setUserOpen(!userOpen);
-              setValue(5);
-            }}
-            selected={value === 5}
-            divider
-            button
-            component={Link}
-            to='/'
-          >
-            <ListItemText sx={classes.drawerItem} disableTypography>
-              {translate('user')}
-            </ListItemText>
-            {userOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={userOpen} timeout='auto' unmountOnExit>
-            <List component='div' disablePadding>
-              <ListItemButton sx={{ pl: 4 }}>
+          {checkToken(token) === false ? (
+            <>
+              <ListItem
+                className='header__drawer-listItem'
+                onClick={() => {
+                  setUserOpen(!userOpen);
+                  setValue(5);
+                }}
+                selected={value === 5}
+                divider
+                button
+              >
                 <ListItemText sx={classes.drawerItem} disableTypography>
-                  {translate('login')}
+                  {translate('user')}
                 </ListItemText>
-              </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }}>
-                <ListItemText sx={classes.drawerItem} disableTypography>
-                  {translate('register')}
-                </ListItemText>
-              </ListItemButton>
-            </List>
-          </Collapse>
+                {userOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItem>
+              <Collapse in={userOpen} timeout='auto' unmountOnExit>
+                <List component='div' disablePadding>
+                  <ListItemButton
+                    onClick={() => setOpenDrawer(false)}
+                    component={Link}
+                    to='/signin'
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemText sx={classes.drawerItem} disableTypography>
+                      {translate('login')}
+                    </ListItemText>
+                  </ListItemButton>
+                  <ListItemButton
+                    onClick={() => setOpenDrawer(false)}
+                    component={Link}
+                    to='/register'
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemText sx={classes.drawerItem} disableTypography>
+                      {translate('register')}
+                    </ListItemText>
+                  </ListItemButton>
+                </List>
+              </Collapse>
+            </>
+          ) : (
+            <ListItem sx={classes.LogOutButton} button onClick={handleLogout}>
+              <ListItemText>{translate('logout')}</ListItemText>
+            </ListItem>
+          )}
         </List>
       </SwipeableDrawer>
       <IconButton

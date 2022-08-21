@@ -34,4 +34,7 @@ export const classes = {
     ...theme.typography.tab,
     color: 'white',
   },
+  LogOutButton: {
+    ...theme.typography.auth,
+  },
 };
