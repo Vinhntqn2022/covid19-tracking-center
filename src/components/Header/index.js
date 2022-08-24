@@ -8,7 +8,6 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import SearchIcon from '@mui/icons-material/Search';
 
 import logo from '../../assets/logo.svg';
 import './Header.css';
